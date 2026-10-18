@@ -1,0 +1,170 @@
+@import "tailwindcss";
+
+:root {
+  --ink: #0b0b0f;
+  --ink-2: #131318;
+  --ink-3: #1c1c23;
+  --line: #2a2a33;
+  --accent: #e8322e;
+  --accent-2: #f5c542;
+  --accent-3: #3dd68c;
+  --fg: #f4f4f5;
+  --muted: #8b8b94;
+}
+
+@theme inline {
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-accent-3: var(--accent-3);
+  --color-muted: var(--muted);
+  --font-display: var(--font-barlow);
+  --font-sans: var(--font-inter);
+}
+
+body {
+  background: var(--ink);
+  color: var(--fg);
+  font-family: var(--font-inter), system-ui, sans-serif;
+  background-image:
+    radial-gradient(1200px 600px at 20% -10%, rgba(232, 50, 46, 0.12), transparent 60%),
+    radial-gradient(900px 500px at 100% 0%, rgba(245, 197, 66, 0.07), transparent 60%);
+}
+
+.display {
+  font-family: var(--font-barlow), "Arial Narrow", Impact, sans-serif;
+}
+
+.draw-on {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw-on 0.9s ease-out forwards;
+}
+.draw-on-slow {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw-on 2.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+@keyframes draw-on {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.checker {
+  background-image:
+    linear-gradient(45deg, #fff 25%, transparent 25%),
+    linear-gradient(-45deg, #fff 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #fff 75%),
+    linear-gradient(-45deg, transparent 75%, #fff 75%);
+  background-size: 8px 8px;
+  background-position: 0 0, 0 4px, 4px -4px, -4px 0;
+}
+
+/* Corner apex highlight: an expanding ring. */
+.pulse-ring {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pulse-ring 1.1s ease-out infinite;
+}
+@keyframes pulse-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(3.2);
+    opacity: 0;
+  }
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Carbon-weave surface for cards and the pit wall. */
+.carbon {
+  background-color: #111116;
+  background-image:
+    linear-gradient(27deg, #151519 5px, transparent 5px),
+    linear-gradient(207deg, #151519 5px, transparent 5px),
+    linear-gradient(27deg, #0f0f13 5px, transparent 5px),
+    linear-gradient(207deg, #0f0f13 5px, transparent 5px),
+    linear-gradient(90deg, #131318 10px, transparent 10px),
+    linear-gradient(#1a1a20 25%, #15151a 25%, #15151a 50%, transparent 50%, transparent 75%, #17171c 75%, #17171c);
+  background-size: 20px 20px;
+  background-position: 0 5px, 10px 0, 0 10px, 10px 5px, 0 0, 0 0;
+}
+
+/* Chequered divider line. */
+.chequer {
+  height: 8px;
+  background-image:
+    linear-gradient(45deg, #e4e4e7 25%, transparent 25%),
+    linear-gradient(-45deg, #e4e4e7 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #e4e4e7 75%),
+    linear-gradient(-45deg, transparent 75%, #e4e4e7 75%);
+  background-size: 8px 8px;
+  background-position: 0 0, 0 4px, 4px -4px, -4px 0;
+  opacity: 0.55;
+}
+
+/* Start lights in the header idle-pulse one after another. */
+.light {
+  width: 10px;
+  height: 10px;
+  border-radius: 9999px;
+  background: #3a1414;
+  box-shadow: inset 0 0 0 1px #2a2a33;
+}
+.light.idle {
+  animation: light-idle 3.2s ease-in-out infinite;
+}
+.light.on {
+  background: #ff3b30;
+  box-shadow: 0 0 10px 2px rgba(255, 59, 48, 0.55);
+}
+@keyframes light-idle {
+  0%,
+  70%,
+  100% {
+    background: #3a1414;
+    box-shadow: inset 0 0 0 1px #2a2a33;
+  }
+  12% {
+    background: #ff3b30;
+    box-shadow: 0 0 10px 2px rgba(255, 59, 48, 0.55);
+  }
+}
+
+/* Stamp: slams in from large and slightly rotated. */
+.stamp-in {
+  animation: stamp-in 0.45s cubic-bezier(0.2, 1.4, 0.3, 1) both;
+}
+@keyframes stamp-in {
+  0% {
+    transform: scale(2.2) rotate(-14deg);
+    opacity: 0;
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(-6deg);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse-ring,
+  .light.idle,
+  .stamp-in,
+  .draw-on,
+  .draw-on-slow {
+    animation-duration: 0.01s;
+    animation-iteration-count: 1;
+  }
+}

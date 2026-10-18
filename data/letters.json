@@ -1,0 +1,953 @@
+[
+ {
+  "id": "A-bh-2002-1750",
+  "letter": "A",
+  "circuitId": "bh-2002",
+  "start": 1750,
+  "end": 2500,
+  "reverse": true,
+  "rotation": 210,
+  "flipX": true
+ },
+ {
+  "id": "A-be-1925-100",
+  "letter": "A",
+  "circuitId": "be-1925",
+  "start": 100,
+  "end": 400,
+  "reverse": true,
+  "rotation": 315,
+  "flipX": true,
+  "label": "La Source"
+ },
+ {
+  "id": "A-at-1969-750",
+  "letter": "A",
+  "circuitId": "at-1969",
+  "start": 750,
+  "end": 1800,
+  "reverse": true,
+  "rotation": 300,
+  "flipX": true
+ },
+ {
+  "id": "A-tr-2005-1300",
+  "letter": "A",
+  "circuitId": "tr-2005",
+  "start": 1300,
+  "end": 2500,
+  "reverse": false,
+  "rotation": 285,
+  "flipX": false
+ },
+ {
+  "id": "B-br-1977-3200",
+  "letter": "B",
+  "circuitId": "br-1977",
+  "start": 3200,
+  "end": 4400,
+  "reverse": false,
+  "rotation": 180,
+  "flipX": true
+ },
+ {
+  "id": "B-br-1940-3150",
+  "letter": "B",
+  "circuitId": "br-1940",
+  "start": 3150,
+  "end": 1402,
+  "reverse": true,
+  "rotation": 195,
+  "flipX": false
+ },
+ {
+  "id": "C-qa-2004-3350",
+  "letter": "C",
+  "circuitId": "qa-2004",
+  "start": 3350,
+  "end": 4100,
+  "reverse": true,
+  "rotation": 180,
+  "flipX": false
+ },
+ {
+  "id": "C-tr-2005-2150",
+  "letter": "C",
+  "circuitId": "tr-2005",
+  "start": 2150,
+  "end": 2750,
+  "reverse": true,
+  "rotation": 15,
+  "flipX": true,
+  "label": "Turn 8 approach"
+ },
+ {
+  "id": "C-it-1914-3500",
+  "letter": "C",
+  "circuitId": "it-1914",
+  "start": 3500,
+  "end": 3800,
+  "reverse": false,
+  "rotation": 300,
+  "flipX": true
+ },
+ {
+  "id": "C-sa-2021-2250",
+  "letter": "C",
+  "circuitId": "sa-2021",
+  "start": 2250,
+  "end": 2550,
+  "reverse": false,
+  "rotation": 90,
+  "flipX": false
+ },
+ {
+  "id": "D-gb-1948-1200",
+  "letter": "D",
+  "circuitId": "gb-1948",
+  "start": 1200,
+  "end": 4200,
+  "reverse": false,
+  "rotation": 210,
+  "flipX": false
+ },
+ {
+  "id": "D-az-2016-2250",
+  "letter": "D",
+  "circuitId": "az-2016",
+  "start": 2250,
+  "end": 4650,
+  "reverse": true,
+  "rotation": 225,
+  "flipX": false
+ },
+ {
+  "id": "D-br-1940-3150",
+  "letter": "D",
+  "circuitId": "br-1940",
+  "start": 3150,
+  "end": 1402,
+  "reverse": true,
+  "rotation": 195,
+  "flipX": false
+ },
+ {
+  "id": "E-my-1999-1950",
+  "letter": "E",
+  "circuitId": "my-1999",
+  "start": 1950,
+  "end": 3600,
+  "reverse": false,
+  "rotation": 45,
+  "flipX": true
+ },
+ {
+  "id": "E-br-1940-2000",
+  "letter": "E",
+  "circuitId": "br-1940",
+  "start": 2000,
+  "end": 2900,
+  "reverse": true,
+  "rotation": 15,
+  "flipX": false,
+  "label": "Senna S"
+ },
+ {
+  "id": "E-hu-1986-2650",
+  "letter": "E",
+  "circuitId": "hu-1986",
+  "start": 2650,
+  "end": 4300,
+  "reverse": false,
+  "rotation": 60,
+  "flipX": true
+ },
+ {
+  "id": "F-tr-2005-4550",
+  "letter": "F",
+  "circuitId": "tr-2005",
+  "start": 4550,
+  "end": 4850,
+  "reverse": false,
+  "rotation": 330,
+  "flipX": false
+ },
+ {
+  "id": "F-my-1999-2500",
+  "letter": "F",
+  "circuitId": "my-1999",
+  "start": 2500,
+  "end": 3550,
+  "reverse": true,
+  "rotation": 225,
+  "flipX": false
+ },
+ {
+  "id": "F-mx-1962-3550",
+  "letter": "F",
+  "circuitId": "mx-1962",
+  "start": 3550,
+  "end": 4150,
+  "reverse": true,
+  "rotation": 315,
+  "flipX": false
+ },
+ {
+  "id": "G-nl-1948-1300",
+  "letter": "G",
+  "circuitId": "nl-1948",
+  "start": 1300,
+  "end": 2500,
+  "reverse": false,
+  "rotation": 330,
+  "flipX": true
+ },
+ {
+  "id": "G-es-1991-350",
+  "letter": "G",
+  "circuitId": "es-1991",
+  "start": 350,
+  "end": 1850,
+  "reverse": false,
+  "rotation": 105,
+  "flipX": true
+ },
+ {
+  "id": "G-br-1940-3500",
+  "letter": "G",
+  "circuitId": "br-1940",
+  "start": 3500,
+  "end": 1752,
+  "reverse": false,
+  "rotation": 315,
+  "flipX": false
+ },
+ {
+  "id": "H-br-1977-3450",
+  "letter": "H",
+  "circuitId": "br-1977",
+  "start": 3450,
+  "end": 289,
+  "reverse": false,
+  "rotation": 270,
+  "flipX": false
+ },
+ {
+  "id": "H-de-1927-350",
+  "letter": "H",
+  "circuitId": "de-1927",
+  "start": 350,
+  "end": 1100,
+  "reverse": true,
+  "rotation": 225,
+  "flipX": true
+ },
+ {
+  "id": "H-qa-2004-1300",
+  "letter": "H",
+  "circuitId": "qa-2004",
+  "start": 1300,
+  "end": 2350,
+  "reverse": false,
+  "rotation": 255,
+  "flipX": true
+ },
+ {
+  "id": "I-br-1977-4600",
+  "letter": "I",
+  "circuitId": "br-1977",
+  "start": 4600,
+  "end": 4900,
+  "reverse": false,
+  "rotation": 90,
+  "flipX": false
+ },
+ {
+  "id": "I-ru-2014-300",
+  "letter": "I",
+  "circuitId": "ru-2014",
+  "start": 300,
+  "end": 600,
+  "reverse": false,
+  "rotation": 255,
+  "flipX": false
+ },
+ {
+  "id": "I-de-1927-4050",
+  "letter": "I",
+  "circuitId": "de-1927",
+  "start": 4050,
+  "end": 4500,
+  "reverse": false,
+  "rotation": 75,
+  "flipX": false
+ },
+ {
+  "id": "I-fr-1969-1700",
+  "letter": "I",
+  "circuitId": "fr-1969",
+  "start": 1700,
+  "end": 2000,
+  "reverse": true,
+  "rotation": 180,
+  "flipX": false
+ },
+ {
+  "id": "J-de-1927-4650",
+  "letter": "J",
+  "circuitId": "de-1927",
+  "start": 4650,
+  "end": 4950,
+  "reverse": false,
+  "rotation": 255,
+  "flipX": false
+ },
+ {
+  "id": "J-bh-2002-3200",
+  "letter": "J",
+  "circuitId": "bh-2002",
+  "start": 3200,
+  "end": 3650,
+  "reverse": true,
+  "rotation": 30,
+  "flipX": false
+ },
+ {
+  "id": "J-es-1991-850",
+  "letter": "J",
+  "circuitId": "es-1991",
+  "start": 850,
+  "end": 1600,
+  "reverse": true,
+  "rotation": 30,
+  "flipX": true
+ },
+ {
+  "id": "J-it-1922-4500",
+  "letter": "J",
+  "circuitId": "it-1922",
+  "start": 4500,
+  "end": 5100,
+  "reverse": false,
+  "rotation": 0,
+  "flipX": false,
+  "label": "Parabolica"
+ },
+ {
+  "id": "K-hu-1986-2950",
+  "letter": "K",
+  "circuitId": "hu-1986",
+  "start": 2950,
+  "end": 4000,
+  "reverse": true,
+  "rotation": 255,
+  "flipX": false
+ },
+ {
+  "id": "K-de-1932-3100",
+  "letter": "K",
+  "circuitId": "de-1932",
+  "start": 3100,
+  "end": 4450,
+  "reverse": true,
+  "rotation": 270,
+  "flipX": false,
+  "label": "Motodrom"
+ },
+ {
+  "id": "K-es-1991-1200",
+  "letter": "K",
+  "circuitId": "es-1991",
+  "start": 1200,
+  "end": 3300,
+  "reverse": false,
+  "rotation": 195,
+  "flipX": true
+ },
+ {
+  "id": "K-us-2012-3550",
+  "letter": "K",
+  "circuitId": "us-2012",
+  "start": 3550,
+  "end": 4450,
+  "reverse": false,
+  "rotation": 15,
+  "flipX": true
+ },
+ {
+  "id": "L-us-2023-1050",
+  "letter": "L",
+  "circuitId": "us-2023",
+  "start": 1050,
+  "end": 1650,
+  "reverse": false,
+  "rotation": 180,
+  "flipX": true
+ },
+ {
+  "id": "L-sg-2008-3100",
+  "letter": "L",
+  "circuitId": "sg-2008",
+  "start": 3100,
+  "end": 3550,
+  "reverse": true,
+  "rotation": 120,
+  "flipX": false
+ },
+ {
+  "id": "L-us-2023-3950",
+  "letter": "L",
+  "circuitId": "us-2023",
+  "start": 3950,
+  "end": 5750,
+  "reverse": false,
+  "rotation": 0,
+  "flipX": false
+ },
+ {
+  "id": "L-ru-2014-1900",
+  "letter": "L",
+  "circuitId": "ru-2014",
+  "start": 1900,
+  "end": 2500,
+  "reverse": false,
+  "rotation": 60,
+  "flipX": true
+ },
+ {
+  "id": "M-us-1956-1600",
+  "letter": "M",
+  "circuitId": "us-1956",
+  "start": 1600,
+  "end": 4000,
+  "reverse": true,
+  "rotation": 165,
+  "flipX": true
+ },
+ {
+  "id": "M-qa-2004-950",
+  "letter": "M",
+  "circuitId": "qa-2004",
+  "start": 950,
+  "end": 2900,
+  "reverse": false,
+  "rotation": 45,
+  "flipX": false
+ },
+ {
+  "id": "M-ar-1952-4000",
+  "letter": "M",
+  "circuitId": "ar-1952",
+  "start": 4000,
+  "end": 2106,
+  "reverse": true,
+  "rotation": 15,
+  "flipX": true
+ },
+ {
+  "id": "M-cn-2004-1200",
+  "letter": "M",
+  "circuitId": "cn-2004",
+  "start": 1200,
+  "end": 2700,
+  "reverse": true,
+  "rotation": 150,
+  "flipX": false
+ },
+ {
+  "id": "N-pt-1972-700",
+  "letter": "N",
+  "circuitId": "pt-1972",
+  "start": 700,
+  "end": 1450,
+  "reverse": true,
+  "rotation": 195,
+  "flipX": false,
+  "label": "Esses"
+ },
+ {
+  "id": "N-us-2012-3450",
+  "letter": "N",
+  "circuitId": "us-2012",
+  "start": 3450,
+  "end": 4200,
+  "reverse": false,
+  "rotation": 150,
+  "flipX": false
+ },
+ {
+  "id": "N-es-1991-1250",
+  "letter": "N",
+  "circuitId": "es-1991",
+  "start": 1250,
+  "end": 2450,
+  "reverse": false,
+  "rotation": 30,
+  "flipX": false
+ },
+ {
+  "id": "N-de-1932-3450",
+  "letter": "N",
+  "circuitId": "de-1932",
+  "start": 3450,
+  "end": 4500,
+  "reverse": false,
+  "rotation": 315,
+  "flipX": true
+ },
+ {
+  "id": "O-az-2016-2500",
+  "letter": "O",
+  "circuitId": "az-2016",
+  "start": 2500,
+  "end": 4450,
+  "reverse": true,
+  "rotation": 255,
+  "flipX": true
+ },
+ {
+  "id": "O-au-1953-500",
+  "letter": "O",
+  "circuitId": "au-1953",
+  "start": 500,
+  "end": 2900,
+  "reverse": true,
+  "rotation": 345,
+  "flipX": false
+ },
+ {
+  "id": "O-br-1940-2750",
+  "letter": "O",
+  "circuitId": "br-1940",
+  "start": 2750,
+  "end": 3500,
+  "reverse": true,
+  "rotation": 105,
+  "flipX": true
+ },
+ {
+  "id": "O-es-2026-2200",
+  "letter": "O",
+  "circuitId": "es-2026",
+  "start": 2200,
+  "end": 2800,
+  "reverse": true,
+  "rotation": 15,
+  "flipX": false
+ },
+ {
+  "id": "P-cn-2004-5400",
+  "letter": "P",
+  "circuitId": "cn-2004",
+  "start": 5400,
+  "end": 552,
+  "reverse": false,
+  "rotation": 270,
+  "flipX": false
+ },
+ {
+  "id": "P-es-2026-2100",
+  "letter": "P",
+  "circuitId": "es-2026",
+  "start": 2100,
+  "end": 3000,
+  "reverse": true,
+  "rotation": 30,
+  "flipX": true
+ },
+ {
+  "id": "P-br-1940-2700",
+  "letter": "P",
+  "circuitId": "br-1940",
+  "start": 2700,
+  "end": 4050,
+  "reverse": true,
+  "rotation": 15,
+  "flipX": false
+ },
+ {
+  "id": "P-us-1909-2150",
+  "letter": "P",
+  "circuitId": "us-1909",
+  "start": 2150,
+  "end": 467,
+  "reverse": true,
+  "rotation": 180,
+  "flipX": true
+ },
+ {
+  "id": "Q-br-1940-2700",
+  "letter": "Q",
+  "circuitId": "br-1940",
+  "start": 2700,
+  "end": 3750,
+  "reverse": false,
+  "rotation": 120,
+  "flipX": false
+ },
+ {
+  "id": "Q-es-2026-2050",
+  "letter": "Q",
+  "circuitId": "es-2026",
+  "start": 2050,
+  "end": 2950,
+  "reverse": false,
+  "rotation": 315,
+  "flipX": true
+ },
+ {
+  "id": "Q-az-2016-2200",
+  "letter": "Q",
+  "circuitId": "az-2016",
+  "start": 2200,
+  "end": 4750,
+  "reverse": true,
+  "rotation": 195,
+  "flipX": true
+ },
+ {
+  "id": "R-fr-1969-4100",
+  "letter": "R",
+  "circuitId": "fr-1969",
+  "start": 4100,
+  "end": 4700,
+  "reverse": false,
+  "rotation": 315,
+  "flipX": true
+ },
+ {
+  "id": "R-fr-1969-1050",
+  "letter": "R",
+  "circuitId": "fr-1969",
+  "start": 1050,
+  "end": 1950,
+  "reverse": true,
+  "rotation": 180,
+  "flipX": false
+ },
+ {
+  "id": "R-mx-1962-1850",
+  "letter": "R",
+  "circuitId": "mx-1962",
+  "start": 1850,
+  "end": 2450,
+  "reverse": true,
+  "rotation": 195,
+  "flipX": true
+ },
+ {
+  "id": "R-nl-1948-2900",
+  "letter": "R",
+  "circuitId": "nl-1948",
+  "start": 2900,
+  "end": 145,
+  "reverse": true,
+  "rotation": 210,
+  "flipX": true
+ },
+ {
+  "id": "S-fr-1969-950",
+  "letter": "S",
+  "circuitId": "fr-1969",
+  "start": 950,
+  "end": 1700,
+  "reverse": true,
+  "rotation": 165,
+  "flipX": true
+ },
+ {
+  "id": "S-br-1977-100",
+  "letter": "S",
+  "circuitId": "br-1977",
+  "start": 100,
+  "end": 1150,
+  "reverse": true,
+  "rotation": 195,
+  "flipX": true
+ },
+ {
+  "id": "S-us-1956-3800",
+  "letter": "S",
+  "circuitId": "us-1956",
+  "start": 3800,
+  "end": 4550,
+  "reverse": false,
+  "rotation": 255,
+  "flipX": true
+ },
+ {
+  "id": "S-nl-1948-2150",
+  "letter": "S",
+  "circuitId": "nl-1948",
+  "start": 2150,
+  "end": 2750,
+  "reverse": true,
+  "rotation": 15,
+  "flipX": true,
+  "label": "Scheivlak esses"
+ },
+ {
+  "id": "T-hu-1986-500",
+  "letter": "T",
+  "circuitId": "hu-1986",
+  "start": 500,
+  "end": 1550,
+  "reverse": false,
+  "rotation": 210,
+  "flipX": true
+ },
+ {
+  "id": "T-gb-1948-4450",
+  "letter": "T",
+  "circuitId": "gb-1948",
+  "start": 4450,
+  "end": 5650,
+  "reverse": true,
+  "rotation": 300,
+  "flipX": true
+ },
+ {
+  "id": "T-us-2012-5450",
+  "letter": "T",
+  "circuitId": "us-2012",
+  "start": 5450,
+  "end": 1130,
+  "reverse": false,
+  "rotation": 225,
+  "flipX": true
+ },
+ {
+  "id": "T-be-1925-2500",
+  "letter": "T",
+  "circuitId": "be-1925",
+  "start": 2500,
+  "end": 3700,
+  "reverse": false,
+  "rotation": 165,
+  "flipX": false,
+  "label": "Pouhon to Stavelot"
+ },
+ {
+  "id": "U-pt-1972-800",
+  "letter": "U",
+  "circuitId": "pt-1972",
+  "start": 800,
+  "end": 1100,
+  "reverse": false,
+  "rotation": 195,
+  "flipX": true
+ },
+ {
+  "id": "U-it-1922-4400",
+  "letter": "U",
+  "circuitId": "it-1922",
+  "start": 4400,
+  "end": 5450,
+  "reverse": false,
+  "rotation": 0,
+  "flipX": true,
+  "label": "Parabolica"
+ },
+ {
+  "id": "U-pt-1972-1050",
+  "letter": "U",
+  "circuitId": "pt-1972",
+  "start": 1050,
+  "end": 1350,
+  "reverse": false,
+  "rotation": 15,
+  "flipX": false
+ },
+ {
+  "id": "U-es-1991-1350",
+  "letter": "U",
+  "circuitId": "es-1991",
+  "start": 1350,
+  "end": 1950,
+  "reverse": false,
+  "rotation": 210,
+  "flipX": true
+ },
+ {
+  "id": "U-nl-1948-300",
+  "letter": "U",
+  "circuitId": "nl-1948",
+  "start": 300,
+  "end": 600,
+  "reverse": false,
+  "rotation": 210,
+  "flipX": true
+ },
+ {
+  "id": "V-us-2012-1900",
+  "letter": "V",
+  "circuitId": "us-2012",
+  "start": 1900,
+  "end": 2650,
+  "reverse": false,
+  "rotation": 240,
+  "flipX": false
+ },
+ {
+  "id": "V-ae-2009-950",
+  "letter": "V",
+  "circuitId": "ae-2009",
+  "start": 950,
+  "end": 1700,
+  "reverse": true,
+  "rotation": 180,
+  "flipX": true
+ },
+ {
+  "id": "V-sa-2021-5000",
+  "letter": "V",
+  "circuitId": "sa-2021",
+  "start": 5000,
+  "end": 6050,
+  "reverse": true,
+  "rotation": 330,
+  "flipX": true
+ },
+ {
+  "id": "V-be-1925-100",
+  "letter": "V",
+  "circuitId": "be-1925",
+  "start": 100,
+  "end": 400,
+  "reverse": false,
+  "rotation": 135,
+  "flipX": true,
+  "label": "La Source"
+ },
+ {
+  "id": "W-qa-2004-900",
+  "letter": "W",
+  "circuitId": "qa-2004",
+  "start": 900,
+  "end": 3000,
+  "reverse": true,
+  "rotation": 225,
+  "flipX": false
+ },
+ {
+  "id": "W-us-1956-1500",
+  "letter": "W",
+  "circuitId": "us-1956",
+  "start": 1500,
+  "end": 4050,
+  "reverse": false,
+  "rotation": 345,
+  "flipX": true
+ },
+ {
+  "id": "W-ar-1952-4000",
+  "letter": "W",
+  "circuitId": "ar-1952",
+  "start": 4000,
+  "end": 2106,
+  "reverse": false,
+  "rotation": 195,
+  "flipX": true
+ },
+ {
+  "id": "X-at-1969-500",
+  "letter": "X",
+  "circuitId": "at-1969",
+  "start": 500,
+  "end": 2900,
+  "reverse": true,
+  "rotation": 285,
+  "flipX": false
+ },
+ {
+  "id": "X-pt-1972-1850",
+  "letter": "X",
+  "circuitId": "pt-1972",
+  "start": 1850,
+  "end": 84,
+  "reverse": true,
+  "rotation": 225,
+  "flipX": false
+ },
+ {
+  "id": "Y-ae-2009-400",
+  "letter": "Y",
+  "circuitId": "ae-2009",
+  "start": 400,
+  "end": 2200,
+  "reverse": false,
+  "rotation": 180,
+  "flipX": false
+ },
+ {
+  "id": "Y-pt-2008-1450",
+  "letter": "Y",
+  "circuitId": "pt-2008",
+  "start": 1450,
+  "end": 2650,
+  "reverse": true,
+  "rotation": 165,
+  "flipX": false
+ },
+ {
+  "id": "Y-jp-1962-2400",
+  "letter": "Y",
+  "circuitId": "jp-1962",
+  "start": 2400,
+  "end": 3000,
+  "reverse": false,
+  "rotation": 195,
+  "flipX": false,
+  "label": "Degner to hairpin"
+ },
+ {
+  "id": "Y-cn-2004-3650",
+  "letter": "Y",
+  "circuitId": "cn-2004",
+  "start": 3650,
+  "end": 5150,
+  "reverse": true,
+  "rotation": 300,
+  "flipX": false
+ },
+ {
+  "id": "Z-qa-2004-1700",
+  "letter": "Z",
+  "circuitId": "qa-2004",
+  "start": 1700,
+  "end": 2600,
+  "reverse": false,
+  "rotation": 300,
+  "flipX": true
+ },
+ {
+  "id": "Z-za-1961-3400",
+  "letter": "Z",
+  "circuitId": "za-1961",
+  "start": 3400,
+  "end": 79,
+  "reverse": true,
+  "rotation": 120,
+  "flipX": false
+ },
+ {
+  "id": "Z-nl-1948-2150",
+  "letter": "Z",
+  "circuitId": "nl-1948",
+  "start": 2150,
+  "end": 2750,
+  "reverse": true,
+  "rotation": 15,
+  "flipX": false
+ },
+ {
+  "id": "Z-us-1956-2500",
+  "letter": "Z",
+  "circuitId": "us-1956",
+  "start": 2500,
+  "end": 3550,
+  "reverse": false,
+  "rotation": 45,
+  "flipX": true
+ }
+]
