@@ -1,7 +1,7 @@
 "use client";
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import Car3D, { type CarVariant } from "@/components/Car3D";
 import type { CarTopColours } from "@/components/CarTopSvg";
@@ -19,7 +19,8 @@ import type { LapClock } from "@/lib/hooks/useLapClock";
  * clock and speed profile so it matches the 2D ghost. A gradient dusk sky, haze towards the
  * horizon, grass banks, kerbs and white lines passing under the car, grandstands, braking boards
  * and corner boards going by. The HUD is HTML over the canvas and is updated from the clock
- * without re-rendering React. Pausing switches the canvas to on-demand rendering.
+ * without re-rendering React. Pausing switches the canvas to on-demand rendering. The view fills
+ * whatever box it is given; the play/scrub transport lives outside it (LapTransport).
  */
 
 interface Props {
@@ -27,6 +28,8 @@ interface Props {
   clock: LapClock;
   profile: LapProfile;
   carColours: CarTopColours;
+  /** Cockpit eye or chase camera; chosen from the canvas cluster. */
+  variant: CarVariant;
 }
 
 const SKY_TOP = "#0d1530";
@@ -229,8 +232,7 @@ function DriverRig({ track, built, clock, profile, variant, colours }: RigProps)
   return <Car3D ref={car} colours={colours} variant={variant} />;
 }
 
-export default function DriverView({ track, clock, profile, carColours }: Props) {
-  const [variant, setVariant] = useState<CarVariant>("cockpit");
+export default function DriverView({ track, clock, profile, carColours, variant }: Props) {
   const built = useMemo(
     () => buildGeometry(track, { scale: 1, halfWidth: HALF_WIDTH, zScale: 1, drop: 1.2, bank: 2.5, bankColor: GRASS, topColor: ASPHALT, edgeColor: "#f4f4f5", kerbPeriod: 1, edgeStrip: 0.75 }),
     [track],
@@ -239,8 +241,6 @@ export default function DriverView({ track, clock, profile, carColours }: Props)
   const timeRef = useRef<HTMLSpanElement>(null);
   const cueRef = useRef<HTMLSpanElement>(null);
   const sectorRef = useRef<HTMLSpanElement>(null);
-  const sliderRef = useRef<HTMLInputElement>(null);
-  const dragging = useRef(false);
 
   // HUD text follows the clock without React in the loop.
   useEffect(
@@ -255,7 +255,6 @@ export default function DriverView({ track, clock, profile, carColours }: Props)
           sectorRef.current.textContent = `S${sNo}`;
           sectorRef.current.style.background = SECTOR_COLORS[sNo - 1];
         }
-        if (sliderRef.current && !dragging.current) sliderRef.current.value = t.toFixed(2);
       }),
     [clock, profile, track],
   );
@@ -263,87 +262,43 @@ export default function DriverView({ track, clock, profile, carColours }: Props)
   const extent = Math.max(2000, built.extent * 3);
 
   return (
-    <div className="space-y-3">
-      <div className="relative h-[300px] sm:h-[460px] rounded-xl overflow-hidden bg-[#0d1530]">
-        <Canvas camera={{ fov: 70, near: 0.15, far: 3000, up: [0, 0, 1], position: [0, -20, 4] }} dpr={[1, 1.5]} frameloop={clock.playing ? "always" : "demand"} gl={{ antialias: true }}>
-          <fog attach="fog" args={[HAZE, 140, 1000]} />
-          <ambientLight intensity={0.55} />
-          <hemisphereLight args={[SKY_HORIZON, GRASS, 0.45]} />
-          <directionalLight position={[-400, -300, 260]} intensity={1.6} color="#ffe3c2" />
-          <Sky />
-          <TrackScene built={built} groundSize={extent} groundColor={GRASS} grid={false} standsColor="#4b4b58" startLine="gantry">
-            <Boards track={track} built={built} />
-            <CornerBoards track={track} built={built} />
-            <DriverRig track={track} built={built} clock={clock} profile={profile} variant={variant} colours={carColours} />
-          </TrackScene>
-        </Canvas>
+    <div className="absolute inset-0 bg-[#0d1530]">
+      <Canvas camera={{ fov: 70, near: 0.15, far: 3000, up: [0, 0, 1], position: [0, -20, 4] }} dpr={[1, 1.5]} frameloop={clock.playing ? "always" : "demand"} gl={{ antialias: true }}>
+        <fog attach="fog" args={[HAZE, 140, 1000]} />
+        <ambientLight intensity={0.55} />
+        <hemisphereLight args={[SKY_HORIZON, GRASS, 0.45]} />
+        <directionalLight position={[-400, -300, 260]} intensity={1.6} color="#ffe3c2" />
+        <Sky />
+        <TrackScene built={built} groundSize={extent} groundColor={GRASS} grid={false} standsColor="#4b4b58" startLine="gantry">
+          <Boards track={track} built={built} />
+          <CornerBoards track={track} built={built} />
+          <DriverRig track={track} built={built} clock={clock} profile={profile} variant={variant} colours={carColours} />
+        </TrackScene>
+      </Canvas>
 
-        {/* HUD */}
-        <div className="pointer-events-none absolute inset-0 p-3 sm:p-4 flex flex-col justify-between">
-          <div className="flex items-start justify-between gap-2">
-            <div className="rounded-lg bg-black/55 backdrop-blur-sm px-3 py-2 min-w-[96px]">
-              <div className="display text-3xl sm:text-5xl font-extrabold leading-none tabular">
-                <span ref={speedRef}>0</span>
-                <span className="text-sm sm:text-base font-semibold text-zinc-300 ml-1">km/h</span>
-              </div>
+      {/* HUD: lap time top-right (the camera cluster owns the top-left), sector and cue bottom-left, speed bottom-right. */}
+      <div className="pointer-events-none absolute inset-0 p-3 sm:p-4 flex flex-col justify-between">
+        <div className="flex items-start justify-end">
+          <div className="rounded-lg bg-black/55 backdrop-blur-sm px-3 py-2 text-right">
+            <div className="text-[10px] uppercase tracking-[0.25em] text-zinc-400">Lap</div>
+            <div className="display text-xl sm:text-3xl font-bold leading-none tabular">
+              <span ref={timeRef}>0:00.000</span>
             </div>
-            <div className="rounded-lg bg-black/55 backdrop-blur-sm px-3 py-2 text-right">
-              <div className="text-[10px] uppercase tracking-[0.25em] text-zinc-400">Lap</div>
-              <div className="display text-xl sm:text-3xl font-bold leading-none tabular">
-                <span ref={timeRef}>0:00.000</span>
-              </div>
-            </div>
-          </div>
-          <div className="flex items-end justify-between gap-2">
-            <div className="rounded-lg bg-black/55 backdrop-blur-sm px-3 py-2 flex items-center gap-2 max-w-[70%]">
-              <span ref={sectorRef} className="display text-xs font-bold text-zinc-900 rounded px-1.5 py-0.5" style={{ background: SECTOR_COLORS[0] }}>
-                S1
-              </span>
-              <span ref={cueRef} className="display text-base sm:text-xl font-bold truncate" />
-            </div>
-            <div className="text-[10px] uppercase tracking-[0.2em] text-zinc-400 rounded bg-black/45 px-2 py-1">{variant === "cockpit" ? "Onboard" : "Chase"}</div>
           </div>
         </div>
-      </div>
-
-      {/* Controls */}
-      <div className="flex flex-wrap items-center gap-3 text-xs text-muted">
-        <button
-          type="button"
-          onClick={() => clock.toggle()}
-          aria-label={clock.playing ? "Pause the lap" : "Play the lap"}
-          className="rounded-lg border border-line bg-ink-2 hover:bg-ink-3 px-3 py-1.5 text-zinc-100 font-semibold min-w-[72px]"
-        >
-          {clock.playing ? "Pause" : "Play"}
-        </button>
-        <input
-          ref={sliderRef}
-          type="range"
-          min={0}
-          max={clock.lapSeconds.toFixed(2)}
-          step={0.01}
-          defaultValue={0}
-          aria-label="Lap position"
-          onPointerDown={() => {
-            dragging.current = true;
-          }}
-          onPointerUp={() => {
-            dragging.current = false;
-          }}
-          onInput={(e) => clock.seek(Number((e.target as HTMLInputElement).value))}
-          className="flex-1 min-w-[140px] accent-[var(--accent)]"
-        />
-        <div className="flex rounded-lg border border-line bg-ink-2 p-0.5" role="tablist" aria-label="Camera">
-          {(
-            [
-              ["cockpit", "Cockpit"],
-              ["chase", "Chase"],
-            ] as const
-          ).map(([id, label]) => (
-            <button key={id} role="tab" aria-selected={variant === id} onClick={() => setVariant(id)} className={`px-2.5 py-1 rounded-md ${variant === id ? "bg-zinc-100 text-zinc-900 font-semibold" : "hover:text-zinc-100"}`}>
-              {label}
-            </button>
-          ))}
+        <div className="flex items-end justify-between gap-2">
+          <div className="rounded-lg bg-black/55 backdrop-blur-sm px-3 py-2 flex items-center gap-2 min-w-0 max-w-[60%]">
+            <span ref={sectorRef} className="display text-xs font-bold text-zinc-900 rounded px-1.5 py-0.5 shrink-0" style={{ background: SECTOR_COLORS[0] }}>
+              S1
+            </span>
+            <span ref={cueRef} className="display text-base sm:text-xl font-bold truncate" />
+          </div>
+          <div className="rounded-lg bg-black/55 backdrop-blur-sm px-3 py-2 min-w-[96px] text-right">
+            <div className="display text-3xl sm:text-5xl font-extrabold leading-none tabular">
+              <span ref={speedRef}>0</span>
+              <span className="text-sm sm:text-base font-semibold text-zinc-300 ml-1">km/h</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import { lapsFor } from "../../geo";
-import { creditText, esc, f1, fitTitleSize, fitTrack, frame, statsGrid, text, trackDefs, trackLayer, type StatItem } from "../primitives";
+import { attributionRow, creditText, esc, f1, fitTitleSize, fitTrack, frame, statsGrid, text, trackDefs, trackLayer, type StatItem } from "../primitives";
 import type { Palette, RenderContext, StyleDefinition } from "../types";
 
 /*
@@ -105,6 +105,23 @@ function render(ctx: RenderContext): string {
 
   const corners = track.corners.length <= MAX_NUMBERED ? "numbered" : "none";
 
+  // The grid has five numbers in six cells: the attribution row takes the empty sixth, aligned to
+  // the column and to the value baseline, so it reads as one more entry rather than a sticker.
+  const colW = (W - 2 * L.pad) / 3;
+  const rowTop = L.statsY + L.rowHeight;
+  const side = Math.round(L.labelSize * 2.4 + L.valueSize * 0.78);
+  const attribution = attributionRow(ctx, {
+    x: L.pad + 2 * colW,
+    y: rowTop + L.labelSize * 2.4 + L.valueSize * 0.04 - side,
+    align: "start",
+    color: pal.muted,
+    qrColor: pal.fg,
+    qrOpacity: 0.8,
+    side,
+    urlSize: L.tall ? 14 : 13,
+    capsSize: 10,
+  });
+
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" font-family="${esc(body)}">
 <style>${ctx.fontFace}</style>
 <defs>${trackDefs(sw, pal)}</defs>
@@ -117,6 +134,7 @@ ${seal}
 <g>${trackLayer(track, fit, pal, { sw, corners, maxNamedCorners: ctx.maxNamedCorners })}</g>
 <line x1="${f1(L.pad)}" y1="${f1(L.ruleY)}" x2="${f1(W - L.pad)}" y2="${f1(L.ruleY)}" stroke="${pal.muted}" stroke-opacity="0.3" stroke-width="1"/>
 ${stats}
+${attribution.markup}
 ${text(W / 2, L.creditY, creditText(), { fill: pal.muted, "font-size": 14, "text-anchor": "middle", "fill-opacity": 0.8 })}
 </svg>`;
 }
@@ -127,4 +145,5 @@ export const sector: StyleDefinition = {
   hint: "Dark frame, sector colours, grade seal",
   palette,
   render,
+  story: () => ({ paper: palette.bg, ink: palette.fg, muted: palette.muted }),
 };

@@ -1,7 +1,7 @@
 import { lapsFor } from "../../geo";
 import { pathD } from "../../geo/svg";
 import { CAR_GROUND, carMarkup } from "../car";
-import { creditText, esc, f1, fitTitleSize, fitTrack, startFinishTick, text } from "../primitives";
+import { attributionRow, creditText, esc, f1, fitTitleSize, fitTrack, startFinishTick, text } from "../primitives";
 import { teamFor, wordLines, type Team } from "../teams";
 import type { Palette, RenderContext, StyleDefinition } from "../types";
 
@@ -123,6 +123,7 @@ function render(ctx: RenderContext): string {
   let car: string;
   let stats: string;
   let map: string;
+  let attribution: string;
   if (tall) {
     // The word runs up the right side, the car over its lower half, stats down the left margin.
     // Anchored at the top so a short word peeks above the car and a long one runs the full height.
@@ -155,6 +156,9 @@ function render(ctx: RenderContext): string {
       text(pad, 300 + 7 * 62 + 4, ctx.h.tags.map((t) => t.toUpperCase()).join(" · "), { fill: MUTED, "font-size": 10, "letter-spacing": 2 }) +
       text(pad, 300 + 7 * 62 + 22, licenceLine, { fill: MUTED, "font-size": 10, "letter-spacing": 1.5 });
     map = outline(ctx, { x: W - pad - 230, y: pad + 70, width: 230, height: 230 }, ink);
+    // Between the masthead and the stats column, where a cover keeps its issue block; the column's
+    // foot is under the front wing.
+    attribution = attributionRow(ctx, { x: pad, y: pad + 32 + 52, align: "start", color: MUTED, qrColor: MUTED, side: 60, urlSize: 12, capsSize: 9 }).markup;
   } else {
     // The word sits across the top behind the airbox; the car lower and larger; stats in two columns.
     // A two-word name stacks as two centred lines above the same baseline.
@@ -183,6 +187,9 @@ function render(ctx: RenderContext): string {
       statsColumn(all.slice(4), W - pad - 236, 500, 236, 54, ctx, team, "end") +
       text(W - pad, 500 + 3 * 54 + 4, licenceLine, { fill: MUTED, "font-size": 10, "letter-spacing": 1.5, "text-anchor": "end" });
     map = outline(ctx, { x: pad, y: pad + 70, width: 190, height: 190 }, ink);
+    // The front tyres cover the column feet on the square sheet, so the row sits in the masthead
+    // band at the top right, where a cover keeps its issue block.
+    attribution = attributionRow(ctx, { x: W - pad, y: pad - 6, align: "end", color: MUTED, qrColor: MUTED, side: 56, urlSize: 11.5, capsSize: 9 }).markup;
   }
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" font-family="${esc(ctx.body)}">
@@ -195,6 +202,7 @@ function render(ctx: RenderContext): string {
 ${word}
 ${masthead}
 ${stats}
+${attribution}
 ${map}
 ${car}
 ${edgeLabel}
@@ -209,5 +217,9 @@ export const teamcar: StyleDefinition = {
   hint: "Magazine cover with your team's livery",
   palette,
   render,
+  story: (ctx) => {
+    const team = teamFor(ctx.track.name, ctx.track.seed, ctx.options.team);
+    return { paper: team.paper, ink: team.ink, muted: MUTED };
+  },
 };
 

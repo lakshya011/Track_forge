@@ -15,30 +15,40 @@ character tags, a country DNA split, rarity badges and a fictional ghost lap you
 2. **Inspection**: each letter's source circuit appears with its stretch drawing on and is stamped
    APPROVED while the five start lights fill red. Lights out, the lap draws on, and corners, longest
    straight and elevation range count up. Skip at any time.
-3. **Result**: the licence card sits beside the circuit with three views.
-   - **Circuit**: a **Top view / Driver view** switch. The top view is a furnished 2D map: white edge
-     lines over grained asphalt, red-and-white kerbs on the inside of every corner, gravel traps
-     outside heavy-braking corners, 100 m and 50 m braking boards, sector flags, a DRS detection line
-     before the longest straight, grandstands along the start/finish and longest straights, and a
-     top-down Formula 1 car (front and rear wings, four tyres, halo, in the chosen team's colours or
-     the ghost yellow) lapping to the model time with a running clock. The car follows a speed
-     profile (`speed.ts`): it brakes for corners, crawls through hairpins and stretches its legs on
-     the straights, so a lap takes exactly the card's ghost time. Hover to pause. Corners show their
-     name (`T3 · La Source` when the stretch is a named corner, else the circuit) on hover, and
-     hovering a corner card pulses its apex. Toggle between sector colours and an elevation skin.
-     The driver view is the same lap onboard, in metres: a low-poly single-seater on asphalt with
+3. **Result**: the licence card sits beside the circuit, with two tabs: **Circuit** and **Poster**.
+   - **Circuit** is one canvas with a small camera cluster in its corner: **Map**, **Onboard** and
+     **Orbit**. The map is a furnished 2D plan: white edge lines over grained asphalt, red-and-white
+     kerbs on the inside of every corner, gravel traps outside heavy-braking corners, 100 m and 50 m
+     braking boards, sector flags, a DRS detection line before the longest straight, grandstands along
+     the start/finish and longest straights, and a top-down Formula 1 car (front and rear wings, four
+     tyres, halo, in the chosen team's colours or the ghost yellow) lapping to the model time with a
+     running clock. The car follows a speed profile (`speed.ts`): it brakes for corners, crawls through
+     hairpins and stretches its legs on the straights, so a lap takes exactly the card's ghost time.
+     Hover to pause. Corners show their name (`T3 · La Source` when the stretch is a named corner, else
+     the circuit) on hover, and hovering a corner card pulses its apex. The legend under the map is
+     live: the sector chips and the elevation chip switch the lap between sector colours and an
+     altitude skin. **Onboard** is the same lap in metres: a low-poly single-seater on asphalt with
      kerbs and white lines, grass banks, grandstands, braking boards, corner boards and the start
-     gantry under a dusk sky, from the T-cam over the helmet or a chase camera. A HUD shows speed,
-     lap time, the corner you are in or approaching ("T5 in 120 m") and the sector; play, pause and
-     scrub the lap. Both views share one clock, so switching keeps the car where it was.
-   - **Elevation**: a rotatable 3D ribbon from baked SRTM elevation with kerb-coloured edges,
-     grandstand blocks, the same car lapping to the same clock, and a marker at every corner (a ring
-     on the apex and a pylon on the inside). Hovering a corner card lights its marker and hovering a
-     marker lights the card; clicking either flies the camera to that corner.
-   - **Poster**: four styles to choose from, each live as a thumbnail, in 2:3 or square, exported as
-     PNG (2× the canvas: 2400 × 3600 or 2400 × 2400) or SVG with the display font embedded. The
-     poster tab shows only the gallery and the licence card; the corner list and source cards belong
-     to the Circuit and Elevation views. **Sector** is the framed dark poster: title, subtitle with
+     gantry under a dusk sky, from the T-cam over the helmet or a chase camera (a second pill appears
+     beside the cluster while Onboard is active). A HUD shows speed, lap time, the corner you are in or
+     approaching ("T5 in 120 m") and the sector; play, pause and scrub the lap under the canvas.
+     **Orbit** is a rotatable 3D ribbon from baked SRTM elevation with kerb-coloured edges, grandstand
+     blocks, the same car lapping to the same clock, and a marker at every corner (a ring on the apex
+     and a pylon on the inside). Hovering a corner card lights its marker and hovering a marker lights
+     the card; clicking either flies the camera to that corner. All three cameras share one clock, so
+     switching keeps the car where it was.
+   - **Poster**: four styles to choose from, each live as a thumbnail, in 2:3, square or **Story**
+     (9:16, the 2:3 sheet on its own paper with a larger code in the band below), exported as PNG (2×
+     the canvas for the print sheets, 1080 × 1920 for the story) or SVG with the display font embedded.
+     Every poster carries a quiet **attribution row**, a small QR code with `MADE WITH TRACK FORGE` and
+     the short link, placed where each style keeps its small print: the Sector poster's empty sixth
+     stat cell, a cartouche in the Engraved map's corner, a legend box over the Cartographic map's
+     fade, the Team car cover's issue block. The code encodes the link that rebuilds the circuit, so
+     whoever sees the picture can forge their own. **Share** next to Download PNG hands the picture to
+     the phone's share sheet (Instagram stories, WhatsApp, X and the rest take the PNG directly); on a
+     desktop a small menu offers download, copy link, WhatsApp and X instead. The poster tab shows only
+     the gallery and the licence card; the corner list and source cards belong to the Circuit tab.
+     **Sector** is the framed dark poster: title, subtitle with
      the length reference, grade seal, the furnished lap in a wide band (corner numbers only up to 16
      corners), five numbers in a three-column grid and one credit line. **Engraved** is an oak, walnut or black board with a raised circuit line, corner names
      set along the road and engraved line-art surroundings. **Team car** is a magazine cover: off-white
@@ -58,12 +68,16 @@ character tags, a country DNA split, rarity badges and a fictional ghost lap you
      a river and ponds in pale blue, the circuit's pit complex, grandstands, car parks and run-off, a
      crisp white circuit in a dark halo, a north arrow, and a letter-spaced footer with corners, length
      in km and miles and optional seeded coordinates. The style, ratio and team ride in the link
-     (`&poster=engraved&ratio=1:1`, `&poster=teamcar&team=onyx`); wood, team and map options are
-     remembered in the browser.
-   - Source cards (Circuit and Elevation views) list which corners each letter contributed and which
-     letters share a stroke.
-4. **Challenge a friend**: shares (or copies) the link with a line like "LAKSHYA is Grade 1, difficulty
-   7/10 (technical, hilly), ghost lap 2:41.108. Beat it."
+     (`&poster=engraved&ratio=1:1`, `&poster=teamcar&team=onyx`, `&ratio=9:16`); wood, team and map
+     options are remembered in the browser.
+   - Source cards (Circuit tab) list which corners each letter contributed and which letters share a
+     stroke.
+4. **Challenge a friend**: renders the licence card itself as a 1080 × 1920 picture (the same carbon
+   card: grade seal, difficulty meter, tags, DNA, ghost lap, rarity, a small outline of the lap and the
+   attribution row) and hands it to the share sheet with a line like "LAKSHYA is Grade 1, difficulty
+   7/10 (technical, hilly, hairpin heaven), ghost lap 2:41.108. Beat it." and the link. Square
+   (1080²) and wide (1200 × 630) versions sit under the button; the wide one is also the site's link
+   preview (`public/og.png`). Without a share sheet the same menu as the posters opens.
 
 Lap length follows the name: one letter laps like Monaco (3.337 km), eleven or more like Spa (7.004 km),
 snapped to the nearest real circuit so the "same lap length as …" line keeps meaning. Shared links
@@ -172,6 +186,18 @@ pieces, in a 2 mm-per-unit box, with livery regions filled through `--c1`/`--c2`
 fetches the next/font Barlow Condensed Latin faces once and embeds them as `@font-face` so exports and
 thumbnails match the page; without them the stack falls back to condensed system fonts.
 
+`qr.ts` turns the share link into one `<path>` of QR modules (`qrcode-generator`, level M, four
+modules of quiet zone, cached per link) and `primitives.attributionRow()` sets it beside the caps
+line and the short link; a style only draws the row when the render context has a `shareUrl`, so
+offline builds and tests are unchanged. The 9:16 story is built in `index.ts`: the style renders its
+usual 1200 × 1800 sheet, which is nested at 1080 wide on the style's own paper (`story()` on each
+style names the paper and ink) with a larger row in the band below. `licence.ts` draws the licence
+card as SVG in three formats (story, square, wide) from the same homologation the screen card shows.
+`src/lib/share.ts` holds the link rules (`buildShareUrl` reads `window.location`, so a GitHub Pages
+base path survives), the Web Share route (`navigator.share({ files })`, the only way into Instagram
+and WhatsApp stories from the web, with the link inside the text because iOS drops `url` when files
+are attached) and the fallback intents; `ShareMenu.tsx` is the desktop menu.
+
 ## Known limitations
 
 - Letters that need pen lifts (B, H, K, X in particular) are approximated by continuous strokes and
@@ -211,6 +237,25 @@ variable is unset, so `npm run dev` and `npm run build` are unaffected.
 
 To check the sub-path build locally: `NEXT_PUBLIC_BASE_PATH=/<repo> npm run build`, then serve a folder
 that contains `out/` renamed (or symlinked) to `<repo>` and open `http://localhost:<port>/<repo>/`.
+
+### Update the site by browser
+
+If the repository has no remote on this machine, the site is updated by dragging files into GitHub's web
+uploader. `npm run export:upload` makes that repeatable: it empties `~/Documents/Track forge/track-forge-upload`
+(only that folder; set `TRACK_FORGE_UPLOAD_DIR` to use another), extracts the committed tree of `HEAD` into
+it, and writes `~/Documents/Track forge/UPLOAD-CHANGES.txt` listing every file added, modified or deleted
+since the git tag `uploaded` (the commit GitHub currently has; on the first run everything counts as new).
+
+1. Commit your work, then run `npm run export:upload`.
+2. On github.com open the repository, **Add file → Upload files**, and drag the *contents* of the upload
+   folder into the drop zone. GitHub replaces the files that exist and adds the new ones. Commit to `main`.
+3. Files under **DELETE** in `UPLOAD-CHANGES.txt` have to go one by one: open each on github.com,
+   **… → Delete file**, commit. (The uploader cannot remove files.)
+4. The Pages workflow builds and redeploys in a minute or two.
+5. Run `npm run export:upload -- --mark` so the next export lists only what changed from here.
+
+With GitHub Desktop, or a remote and `git push`, all of this is one click: the workflow runs on every push
+to `main`.
 
 ## License
 

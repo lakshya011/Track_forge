@@ -1,14 +1,16 @@
 "use client";
 
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import ShareMenu, { useImageShare } from "@/components/ShareMenu";
 import { downloadBlob, slug } from "@/lib/download";
 import type { Homologation } from "@/lib/geo/homologation";
 import { svgToPng } from "@/lib/geo/svg";
 import type { Circuit, Track } from "@/lib/geo/types";
-import { POSTER_RATIOS, POSTER_STYLES, STYLES, buildPoster, displayFontStyle, posterSize, type PosterRatio, type PosterStyle, type Wood } from "@/lib/poster";
+import { POSTER_RATIOS, POSTER_STYLES, RATIO_LABELS, STYLES, buildPoster, exportScale, posterSize, type PosterRatio, type PosterStyle, type Wood } from "@/lib/poster";
 import { buildCartography } from "@/lib/poster/cartography";
 import { TEAMS, TEAM_IDS, defaultTeamId, isTeamId, type TeamId } from "@/lib/poster/teams";
 import { setPosterPrefs, usePosterPrefs } from "@/lib/posterPrefs";
+import { POSTER_SHARE_LINE } from "@/lib/share";
 
 interface Props {
   track: Track;
@@ -19,6 +21,10 @@ interface Props {
   ratio: PosterRatio;
   /** Team livery from the link; null means the remembered or default team. */
   team: TeamId | null;
+  /** The link that rebuilds this circuit; printed on every poster as a QR code and short link. */
+  shareUrl: string;
+  /** Embedded display @font-face so exports and thumbnails match the page. */
+  fontFace: string;
   onStyle: (s: PosterStyle) => void;
   onRatio: (r: PosterRatio) => void;
   onTeam: (t: TeamId) => void;
@@ -44,22 +50,11 @@ function useSvgUrl(svg: string, enabled: boolean): string {
 }
 
 /** Four live poster styles to pick from, a ratio switch, per-style options (wood, team livery, map details) and the export buttons. */
-export default function PosterGallery({ track, homologation, lengthCircuit, year, style, ratio, team, onStyle, onRatio, onTeam }: Props) {
+export default function PosterGallery({ track, homologation, lengthCircuit, year, style, ratio, team, shareUrl, fontFace, onStyle, onRatio, onTeam }: Props) {
   const mounted = useMounted();
   const prefs = usePosterPrefs();
-  const [fontFace, setFontFace] = useState("");
   const [busy, setBusy] = useState<"png" | "svg" | null>(null);
-
-  // The display font is fetched once per page; the posters re-render with it when it lands.
-  useEffect(() => {
-    let live = true;
-    displayFontStyle().then((css) => {
-      if (live && css) setFontFace(css);
-    });
-    return () => {
-      live = false;
-    };
-  }, []);
+  const share = useImageShare();
 
   const cartography = useMemo(() => buildCartography(track), [track]);
   const lengthReference = lengthCircuit ? `${lengthCircuit.name} · ${(lengthCircuit.length / 1000).toFixed(3)} km` : undefined;
@@ -67,21 +62,22 @@ export default function PosterGallery({ track, homologation, lengthCircuit, year
   const teamId: TeamId = team ?? (isTeamId(prefs.team) ? prefs.team : defaultTeamId(track.name, track.seed));
 
   const svgs = useMemo(() => {
-    const meta = { homologation, homologatedYear: year, lengthReference, fontFace, cartography };
+    const meta = { homologation, homologatedYear: year, lengthReference, fontFace, cartography, shareUrl: shareUrl || undefined };
     const options = { ...prefs, team: teamId };
     return Object.fromEntries(POSTER_STYLES.map((s) => [s, buildPoster(track, { style: s, ratio, options }, meta)])) as Record<PosterStyle, string>;
-  }, [track, homologation, year, lengthReference, fontFace, cartography, ratio, prefs, teamId]);
+  }, [track, homologation, year, lengthReference, fontFace, cartography, ratio, prefs, teamId, shareUrl]);
 
   const svg = svgs[style];
   const previewUrl = useSvgUrl(svg, mounted);
   const size = posterSize(ratio);
-  const pngW = size.width * 2;
-  const pngH = size.height * 2;
+  const scale = exportScale(ratio);
+  const pngW = size.width * scale;
+  const pngH = size.height * scale;
 
   const exportPng = async () => {
     setBusy("png");
     try {
-      const blob = await svgToPng(svg, 2);
+      const blob = await svgToPng(svg, scale);
       downloadBlob(blob, `${slug(track.name)}-${style}-poster.png`);
     } finally {
       setBusy(null);
@@ -92,6 +88,17 @@ export default function PosterGallery({ track, homologation, lengthCircuit, year
     downloadBlob(new Blob([svg], { type: "image/svg+xml" }), `${slug(track.name)}-${style}-poster.svg`);
     setBusy(null);
   };
+  // Shared copies go out at the sheet's own size (1200 wide): plenty for a feed or a story, and a
+  // quarter of the download's bytes.
+  const sharePoster = () =>
+    share.start({
+      render: () => svgToPng(svg, 1),
+      filename: `${slug(track.name)}-${style}-poster.png`,
+      title: `${track.name} · Track Forge`,
+      text: POSTER_SHARE_LINE,
+      url: shareUrl,
+    });
+  const shareLabel = share.status === "rendering" ? "Preparing…" : share.status === "shared" ? "Sent." : share.status === "copied" ? "Copied." : share.status === "failed" ? "Could not prepare" : "Share";
 
   const aspect = `${size.width} / ${size.height}`;
 
@@ -142,9 +149,9 @@ export default function PosterGallery({ track, homologation, lengthCircuit, year
             <legend className="text-xs uppercase tracking-[0.2em] text-muted mb-1.5">Ratio</legend>
             <div className="flex rounded-lg border border-line bg-ink-2 p-0.5 w-fit" role="radiogroup" aria-label="Poster ratio">
               {POSTER_RATIOS.map((r) => (
-                <button key={r} role="radio" aria-checked={r === ratio} onClick={() => onRatio(r)} className={`px-3 py-1 text-sm rounded-md ${r === ratio ? "bg-zinc-100 text-zinc-900 font-semibold" : "text-muted hover:text-zinc-100"}`}>
-                  {r}
-                  <span className="sr-only">{r === "2:3" ? " portrait" : " square"}</span>
+                <button key={r} role="radio" aria-checked={r === ratio} title={RATIO_LABELS[r].hint} onClick={() => onRatio(r)} className={`px-3 py-1 text-sm rounded-md ${r === ratio ? "bg-zinc-100 text-zinc-900 font-semibold" : "text-muted hover:text-zinc-100"}`}>
+                  {RATIO_LABELS[r].label}
+                  <span className="sr-only"> {RATIO_LABELS[r].hint}</span>
                 </button>
               ))}
             </div>
@@ -222,11 +229,30 @@ export default function PosterGallery({ track, homologation, lengthCircuit, year
             <button onClick={exportPng} disabled={busy !== null} className="w-full rounded-lg bg-accent hover:bg-red-500 disabled:opacity-50 px-4 py-3 font-semibold">
               {busy === "png" ? "Rendering…" : `Download PNG (${pngW} × ${pngH})`}
             </button>
-            <button onClick={exportSvg} disabled={busy !== null} className="w-full rounded-lg border border-line bg-ink-2 hover:bg-ink-3 px-4 py-3 font-semibold">
-              Download SVG
-            </button>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={sharePoster}
+                  disabled={share.status === "rendering" || !mounted}
+                  aria-haspopup="dialog"
+                  aria-expanded={share.menu !== null}
+                  title="Share this poster to WhatsApp, Instagram stories, X and more"
+                  className="w-full rounded-lg border border-line bg-ink-2 hover:bg-ink-3 disabled:opacity-50 px-3 py-3 text-sm font-semibold flex items-center justify-center gap-2"
+                >
+                  <svg className="size-4 shrink-0" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden>
+                    <path d="M8 10V2.5m0 0L5.5 5M8 2.5 10.5 5M3.5 8.5v4a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1v-4" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  <span className="truncate">{shareLabel}</span>
+                </button>
+                {share.menu && <ShareMenu image={share.menu} title={`the ${STYLES[style].name.toLowerCase()} poster`} text={share.menu.text} url={share.menu.url} onClose={share.close} onCopied={() => share.flash("copied")} align="start" />}
+              </div>
+              <button onClick={exportSvg} disabled={busy !== null} className="rounded-lg border border-line bg-ink-2 hover:bg-ink-3 px-3 py-3 text-sm font-semibold">
+                Download SVG
+              </button>
+            </div>
           </div>
-          <p className="text-xs text-muted">The link in your address bar remembers the style, ratio and team. Surroundings on the map styles are fictional and generated from the name. Team liveries are fan colour schemes with the team name as plain text: unofficial, no logos, not affiliated with any team.</p>
+          <p className="text-xs text-muted">Every poster carries a small code and link back here, so whoever sees it can forge their own. The link in your address bar remembers the style, ratio and team. Surroundings on the map styles are fictional and generated from the name. Team liveries are fan colour schemes with the team name as plain text: unofficial, no logos, not affiliated with any team.</p>
         </div>
       </div>
     </div>

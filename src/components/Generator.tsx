@@ -1,8 +1,9 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import type { Camera } from "@/components/CanvasControls";
+import type { CarVariant } from "@/components/Car3D";
 import CircuitPanel, { CornerList, carColoursFor } from "@/components/CircuitPanel";
 import Inspection from "@/components/Inspection";
 import Landing from "@/components/Landing";
@@ -16,19 +17,18 @@ import { lapProfile } from "@/lib/geo/speed";
 import type { Track } from "@/lib/geo/types";
 import { useLapClock } from "@/lib/hooks/useLapClock";
 import type { FlyRequest } from "@/components/Track3D";
-import type { CircuitMode } from "@/components/CircuitPanel";
-import { defaultTeamId, isTeamId, type TeamId } from "@/lib/poster/teams";
+import type { TrackSkin } from "@/components/TrackSvg";
+import { isTeamId, type TeamId } from "@/lib/poster/teams";
+import { displayFontStyle } from "@/lib/poster/fonts";
 import { isPosterRatio, posterStyleFrom, type PosterRatio, type PosterStyle } from "@/lib/poster/types";
 import { usePosterPrefs } from "@/lib/posterPrefs";
+import { buildShareUrl, shareQuery } from "@/lib/share";
 
-const Track3D = dynamic(() => import("@/components/Track3D"), { ssr: false, loading: () => <div className="h-full grid place-items-center text-muted">Loading 3D…</div> });
-
-type View = "circuit" | "elevation" | "poster";
+type View = "circuit" | "poster";
 
 const VIEWS: { id: View; label: string; hint: string }[] = [
-  { id: "circuit", label: "Circuit", hint: "Kerbs, gravel, sectors, ghost car" },
-  { id: "elevation", label: "Elevation", hint: "3D ribbon from real altitude" },
-  { id: "poster", label: "Poster", hint: "Four styles, PNG or SVG" },
+  { id: "circuit", label: "Circuit", hint: "Map, onboard and 3D orbit on one canvas" },
+  { id: "poster", label: "Poster", hint: "Four styles, PNG or SVG, share" },
 ];
 
 const HOMOLOGATION_YEAR = 2026;
@@ -58,11 +58,25 @@ export default function Generator() {
   const posterTeam: TeamId | null = isTeamId(teamParam) ? teamParam : null;
 
   const [view, setView] = useState<View>(posterParam ? "poster" : "circuit");
-  const [circuitMode, setCircuitMode] = useState<CircuitMode>("top");
+  // The circuit canvas: which camera, which onboard rig and which map skin.
+  const [camera, setCamera] = useState<Camera>("map");
+  const [rig, setRig] = useState<CarVariant>("cockpit");
+  const [skin, setSkin] = useState<TrackSkin>("sector");
   const [inspecting, setInspecting] = useState(false);
   const prefs = usePosterPrefs();
+  // The display font, embedded once per page so posters, thumbnails and the shared licence card match the screen.
+  const [fontFace, setFontFace] = useState("");
+  useEffect(() => {
+    let live = true;
+    displayFontStyle().then((css) => {
+      if (live && css) setFontFace(css);
+    });
+    return () => {
+      live = false;
+    };
+  }, []);
   const [activeCorner, setActiveCorner] = useState<number | null>(null);
-  // A corner card or 3D marker was clicked: the Elevation camera flies there (nonce so repeats work).
+  // A corner card or 3D marker was clicked: the orbit camera flies there (nonce so repeats work).
   const [flyTo, setFlyTo] = useState<FlyRequest | null>(null);
   const flyToCorner = useCallback((n: number) => setFlyTo((f) => ({ n, nonce: (f?.nonce ?? 0) + 1 })), []);
 
@@ -96,13 +110,7 @@ export default function Generator() {
 
   const push = useCallback(
     (name: string, seed: number, lenId?: string, poster?: { style: PosterStyle; ratio: PosterRatio; team: TeamId | null }) => {
-      const q = new URLSearchParams();
-      q.set("name", name);
-      if (seed) q.set("seed", String(seed));
-      if (lenId) q.set("len", lenId);
-      if (poster && poster.style !== "sector") q.set("poster", poster.style);
-      if (poster && poster.ratio !== "2:3") q.set("ratio", poster.ratio);
-      if (poster?.team && poster.team !== defaultTeamId(name, seed)) q.set("team", poster.team);
+      const q = shareQuery({ name, seed }, { ...poster, len: lenId });
       router.replace(`${pathname}?${q.toString()}`, { scroll: false });
     },
     [router, pathname],
@@ -138,16 +146,8 @@ export default function Generator() {
   }
 
   const lengthCircuit = circuitById.get(urlLen);
-  const shareUrl = typeof window !== "undefined" ? `${window.location.origin}${pathname}?${(() => {
-    const q = new URLSearchParams();
-    q.set("name", track.name);
-    if (track.seed) q.set("seed", String(track.seed));
-    if (urlLenRaw) q.set("len", urlLenRaw);
-    if (posterStyle !== "sector") q.set("poster", posterStyle);
-    if (posterRatio !== "2:3") q.set("ratio", posterRatio);
-    if (posterTeam) q.set("team", posterTeam);
-    return q.toString();
-  })()}` : "";
+  // Built from the real location (not usePathname, which drops a GitHub Pages base path).
+  const shareUrl = buildShareUrl(track, { style: posterStyle, ratio: posterRatio, team: posterTeam, len: urlLenRaw });
   const cornersByLetter = cornerNumbersByLetter(track);
   const carColours = carColoursFor(posterTeam, prefs.team);
 
@@ -190,11 +190,7 @@ export default function Generator() {
                 ))}
               </nav>
               <div className="rounded-2xl border border-line bg-ink-2 p-3 sm:p-5">
-                {view === "elevation" ? (
-                  <div className="h-[380px] sm:h-[560px] rounded-xl overflow-hidden">
-                    <Track3D track={track} clock={clock} profile={profile ?? undefined} carColours={carColours} activeCorner={activeCorner} onActiveCorner={setActiveCorner} onSelectCorner={flyToCorner} flyTo={flyTo} />
-                  </div>
-                ) : view === "poster" ? (
+                {view === "poster" ? (
                   <PosterGallery
                     track={track}
                     homologation={homologation}
@@ -203,23 +199,40 @@ export default function Generator() {
                     style={posterStyle}
                     ratio={posterRatio}
                     team={posterTeam}
+                    shareUrl={shareUrl}
+                    fontFace={fontFace}
                     onStyle={(s) => setPoster(s, posterRatio)}
                     onRatio={(r) => setPoster(posterStyle, r)}
                     onTeam={(t) => setPoster(posterStyle, posterRatio, t)}
                   />
                 ) : (
-                  <CircuitPanel track={track} clock={clock} profile={profile!} carColours={carColours} mode={circuitMode} onMode={setCircuitMode} activeCorner={activeCorner} onActiveCorner={setActiveCorner} />
+                  <CircuitPanel
+                    track={track}
+                    clock={clock}
+                    profile={profile!}
+                    carColours={carColours}
+                    camera={camera}
+                    onCamera={setCamera}
+                    rig={rig}
+                    onRig={setRig}
+                    skin={skin}
+                    onSkin={setSkin}
+                    activeCorner={activeCorner}
+                    onActiveCorner={setActiveCorner}
+                    onSelectCorner={flyToCorner}
+                    flyTo={flyTo}
+                  />
                 )}
               </div>
             </div>
 
-            {/* The poster tab is about the picture; the corner list and source cards belong to the Circuit and Elevation views. */}
+            {/* The poster tab is about the picture; the corner list and source cards belong to the Circuit view. */}
             {view !== "poster" && (
               <section className="space-y-2 min-w-0">
                 <h2 className="text-xs uppercase tracking-[0.25em] text-muted">
-                  {track.corners.length} corners · hover to find each apex{view === "elevation" && " · click to fly there"}
+                  {track.corners.length} corners · hover to find each apex{camera === "orbit" && " · click to fly there"}
                 </h2>
-                <CornerList track={track} activeCorner={activeCorner} onActiveCorner={setActiveCorner} onSelectCorner={view === "elevation" ? flyToCorner : undefined} />
+                <CornerList track={track} activeCorner={activeCorner} onActiveCorner={setActiveCorner} onSelectCorner={camera === "orbit" ? flyToCorner : undefined} />
               </section>
             )}
 
@@ -248,7 +261,7 @@ export default function Generator() {
           </div>
 
           <div className="lg:sticky lg:top-6">
-            <LicenceCard track={track} homologation={homologation} shareUrl={shareUrl} year={HOMOLOGATION_YEAR} />
+            <LicenceCard track={track} homologation={homologation} shareUrl={shareUrl} year={HOMOLOGATION_YEAR} fontFace={fontFace} />
           </div>
         </div>
       )}

@@ -2,7 +2,7 @@ import { pathD, type Fit } from "../../geo/svg";
 import type { Pt2 } from "../../geo/types";
 import { pointAt } from "../../geo/decor";
 import { buildCartography, type Cartography, type RoadKind } from "../cartography";
-import { creditText, esc, f1, fitTitleSize, fitTrack, northArrow, pseudoCoordinates, pts, startFinishTick, text } from "../primitives";
+import { attributionRow, creditText, esc, f1, fitTitleSize, fitTrack, northArrow, pseudoCoordinates, pts, startFinishTick, text } from "../primitives";
 import type { Palette, RenderContext, StyleDefinition } from "../types";
 
 /*
@@ -229,6 +229,19 @@ function render(ctx: RenderContext): string {
   const coords = options.coordinates ? pseudoCoordinates(track.name, track.seed) : "";
   const spacing = titleSize * (tall ? 0.5 : 0.42);
   const footerTop = map.height;
+  // A legend box in the map's bottom-right corner, over the fade, in the map's own greys. A touch
+  // larger than elsewhere: the modules fight paper grain and a vignette here.
+  const side = Math.round(W * 0.06);
+  const legend = attributionRow(ctx, {
+    x: W - pad,
+    y: map.height - 16 - side,
+    align: "end",
+    color: C.muted,
+    qrColor: C.highway,
+    qrOpacity: 0.9,
+    side,
+    plate: { fill: C.bg, opacity: 0.88, pad: 10, radius: 3 },
+  });
 
   let footerMarkup: string;
   if (tall) {
@@ -277,6 +290,7 @@ ${sectorDots}
 <rect width="${W}" height="${H}" fill="url(#cg-vignette)"/>
 <rect width="${W}" height="${H}" filter="url(#cg-paper)" opacity="0.6"/>
 ${options.northArrow ? northArrow(pad + 4, pad + 36, 64, C.fg, ctx.body) : ""}
+${legend.markup}
 <line x1="${pad}" y1="${map.height}" x2="${W - pad}" y2="${map.height}" stroke="${C.rule}" stroke-width="1"/>
 ${footerMarkup}
 </svg>`;
@@ -288,4 +302,5 @@ export const cartographic: StyleDefinition = {
   hint: "Charcoal street map, white line, north arrow",
   palette,
   render,
+  story: () => ({ paper: C.bg, ink: C.fg, muted: C.muted }),
 };

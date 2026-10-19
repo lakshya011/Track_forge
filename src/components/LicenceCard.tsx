@@ -1,8 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import ShareMenu, { useImageShare } from "@/components/ShareMenu";
+import { slug } from "@/lib/download";
 import type { Homologation } from "@/lib/geo/homologation";
+import { svgToPng } from "@/lib/geo/svg";
 import type { Track } from "@/lib/geo/types";
+import { DNA_COLORS, LICENCE_FORMAT_LABELS, buildLicenceCardSvg, type LicenceFormat } from "@/lib/poster/licence";
+
+export { DNA_COLORS };
 
 interface Props {
   track: Track;
@@ -10,36 +15,8 @@ interface Props {
   /** Link that rebuilds this exact circuit. */
   shareUrl: string;
   year?: number;
-}
-
-export const DNA_COLORS = ["#e8322e", "#3dd68c", "#f5c542", "#60a5fa", "#c084fc", "#fb923c", "#2dd4bf", "#f472b6"] as const;
-
-/** Copy with the Clipboard API when allowed, else the legacy selection route. Returns success. */
-function copyText(text: string): boolean {
-  try {
-    const ta = document.createElement("textarea");
-    ta.value = text;
-    ta.setAttribute("readonly", "");
-    ta.style.position = "fixed";
-    ta.style.opacity = "0";
-    document.body.appendChild(ta);
-    ta.select();
-    const ok = document.execCommand("copy");
-    ta.remove();
-    if (ok) {
-      // Best effort: the async API may still succeed and is preferred when it does.
-      navigator.clipboard?.writeText(text).catch(() => undefined);
-      return true;
-    }
-  } catch {
-    /* fall through */
-  }
-  try {
-    void navigator.clipboard?.writeText(text);
-    return true;
-  } catch {
-    return false;
-  }
+  /** Embedded display @font-face so the shared PNG matches the page. */
+  fontFace?: string;
 }
 
 export function challengeText(track: Track, h: Homologation): string {
@@ -47,30 +24,26 @@ export function challengeText(track: Track, h: Homologation): string {
 }
 
 /** The reward: a licence card with grade, difficulty, character tags, DNA, ghost lap and badges. */
-export default function LicenceCard({ track, homologation: h, shareUrl, year = new Date().getFullYear() }: Props) {
-  const [shared, setShared] = useState<"idle" | "copied" | "shared" | "failed">("idle");
+export default function LicenceCard({ track, homologation: h, shareUrl, year = new Date().getFullYear(), fontFace = "" }: Props) {
+  const share = useImageShare();
 
-  const challenge = async () => {
-    const text = challengeText(track, h);
-    const payload = `${text} ${shareUrl}`;
-    try {
-      if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
-        await navigator.share({ title: `${track.name} · Track Forge`, text, url: shareUrl });
-        setShared("shared");
-      } else {
-        setShared(copyText(payload) ? "copied" : "failed");
-      }
-    } catch (e) {
-      // An aborted share sheet is not a failure; anything else falls back to the clipboard.
-      if (e instanceof DOMException && e.name === "AbortError") return;
-      setShared(copyText(payload) ? "copied" : "failed");
-    }
-    setTimeout(() => setShared("idle"), 2600);
-  };
+  // Challenge a friend sends the card itself as a story-sized PNG with the dare and the link; the
+  // small row underneath offers the other two sizes.
+  const sendCard = (format: LicenceFormat) =>
+    share.start({
+      render: () => svgToPng(buildLicenceCardSvg(track, h, { format, fontFace, shareUrl, year }), 1),
+      filename: `${slug(track.name)}-licence-${format}.png`,
+      title: `${track.name} · Track Forge`,
+      text: challengeText(track, h),
+      url: shareUrl,
+    });
+
+  const button =
+    share.status === "rendering" ? "Preparing the card…" : share.status === "shared" ? "Sent." : share.status === "copied" ? "Copied. Send it." : share.status === "failed" ? "Could not prepare the card" : "Challenge a friend";
 
   return (
-    <article className="carbon relative rounded-3xl border border-line p-5 sm:p-6 shadow-2xl shadow-black/50 overflow-hidden" aria-label={`Licence card for ${track.name}`}>
-      <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-accent via-accent-2 to-accent-3" />
+    <article className="carbon relative rounded-3xl border border-line p-5 sm:p-6 shadow-2xl shadow-black/50" aria-label={`Licence card for ${track.name}`}>
+      <div className="absolute inset-x-0 top-0 h-1.5 rounded-t-3xl bg-gradient-to-r from-accent via-accent-2 to-accent-3" />
 
       <header className="flex items-start justify-between gap-3">
         <div>
@@ -158,15 +131,35 @@ export default function LicenceCard({ track, homologation: h, shareUrl, year = n
         </section>
       )}
 
-      <button
-        onClick={challenge}
-        className="display mt-6 w-full rounded-xl bg-zinc-100 text-zinc-900 hover:bg-white active:scale-[0.99] transition px-4 py-3 text-xl font-bold tracking-wide"
-      >
-        {shared === "copied" ? "Copied. Send it." : shared === "shared" ? "Sent." : shared === "failed" ? "Copy this by hand" : "Challenge a friend"}
-      </button>
-      {shared === "failed" && (
-        <textarea readOnly value={`${challengeText(track, h)} ${shareUrl}`} onFocus={(e) => e.currentTarget.select()} rows={3} className="mt-2 w-full rounded-lg border border-line bg-ink/60 p-2 text-xs text-zinc-200" aria-label="Challenge text" />
-      )}
+      <div className="relative mt-6">
+        <button
+          type="button"
+          onClick={() => sendCard("story")}
+          disabled={share.status === "rendering"}
+          aria-haspopup="dialog"
+          aria-expanded={share.menu !== null}
+          className="display w-full rounded-xl bg-zinc-100 text-zinc-900 hover:bg-white active:scale-[0.99] disabled:opacity-70 transition px-4 py-3 text-xl font-bold tracking-wide"
+        >
+          {button}
+        </button>
+        {share.menu && <ShareMenu image={share.menu} title={`${track.name}'s licence`} text={share.menu.text} url={share.menu.url} onClose={share.close} onCopied={() => share.flash("copied")} align="end" />}
+      </div>
+      <p className="mt-2 text-[11px] text-muted leading-snug">
+        Sends the card as a picture with the dare and the link.
+        <span className="whitespace-nowrap">
+          {" "}
+          Also as{" "}
+          {(["square", "wide"] as const).map((f, i) => (
+            <span key={f}>
+              {i > 0 && " · "}
+              <button type="button" onClick={() => sendCard(f)} disabled={share.status === "rendering"} title={LICENCE_FORMAT_LABELS[f].hint} className="underline decoration-dotted underline-offset-2 hover:text-zinc-100 disabled:opacity-60">
+                {LICENCE_FORMAT_LABELS[f].label.toLowerCase()}
+              </button>
+            </span>
+          ))}
+          .
+        </span>
+      </p>
       <p className="mt-3 text-[10px] text-muted leading-snug">Fictional grade and lap time. Not an FIA document; unofficial fan project.</p>
     </article>
   );

@@ -11,9 +11,15 @@ export function posterStyleFrom(s: unknown): PosterStyle | null {
   return isPosterStyle(s) ? s : null;
 }
 
-export type PosterRatio = "2:3" | "1:1";
-export const POSTER_RATIOS: readonly PosterRatio[] = ["2:3", "1:1"];
-export const isPosterRatio = (s: unknown): s is PosterRatio => s === "2:3" || s === "1:1";
+/** 2:3 and 1:1 are print sheets; 9:16 is the phone story: the 2:3 sheet on its paper with the attribution row below. */
+export type PosterRatio = "2:3" | "1:1" | "9:16";
+export const POSTER_RATIOS: readonly PosterRatio[] = ["2:3", "1:1", "9:16"];
+export const isPosterRatio = (s: unknown): s is PosterRatio => s === "2:3" || s === "1:1" || s === "9:16";
+export const RATIO_LABELS: Record<PosterRatio, { label: string; hint: string }> = {
+  "2:3": { label: "2:3", hint: "portrait" },
+  "1:1": { label: "1:1", hint: "square" },
+  "9:16": { label: "Story", hint: "9:16, for Instagram and WhatsApp stories" },
+};
 
 export type Wood = "oak" | "walnut" | "black";
 
@@ -51,6 +57,8 @@ export interface PosterMeta {
   cartography?: Cartography;
   /** Corner-count limit for drawing place names next to the numbers. */
   maxNamedCorners?: number;
+  /** The link that rebuilds this circuit; with it every style draws its attribution row (QR + short link). */
+  shareUrl?: string;
 }
 
 export interface Palette {
@@ -86,6 +94,15 @@ export interface RenderContext {
   options: PosterOptions;
   cartography?: Cartography;
   maxNamedCorners: number;
+  /** When set, the style draws the attribution row (QR + short link) in its credit area. */
+  shareUrl?: string;
+}
+
+/** Colours the story frame borrows so its letterbox looks like the sheet's own paper. */
+export interface StoryTheme {
+  paper: string;
+  ink: string;
+  muted: string;
 }
 
 export interface StyleDefinition {
@@ -94,8 +111,20 @@ export interface StyleDefinition {
   hint: string;
   palette: Palette;
   render: (ctx: RenderContext) => string;
+  /** Paper and ink for the story letterbox; defaults to the palette's bg/fg/muted. */
+  story?: (ctx: RenderContext) => StoryTheme;
 }
 
+export const STORY_SIZE = { width: 1080, height: 1920 } as const;
+/** The sheet inside a story: a 2:3 poster at the story's width. */
+export const STORY_SHEET = { width: 1080, height: 1620 } as const;
+
 export function posterSize(ratio: PosterRatio): { width: number; height: number } {
+  if (ratio === "9:16") return { ...STORY_SIZE };
   return ratio === "1:1" ? { width: 1200, height: 1200 } : { width: 1200, height: 1800 };
+}
+
+/** PNG export scale per ratio: print sheets go out at 2×, the story at its native 1080 × 1920. */
+export function exportScale(ratio: PosterRatio): number {
+  return ratio === "9:16" ? 1 : 2;
 }

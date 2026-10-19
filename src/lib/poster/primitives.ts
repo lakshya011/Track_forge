@@ -2,6 +2,8 @@ import { brakingBoards, drsDetection, grandstands, gravelTraps, kerbs, rangeSamp
 import { hashString, mulberry32 } from "../geo/rng";
 import { fitToBox, outwardNormal, pathD, splitSectors, type Fit } from "../geo/svg";
 import type { Pt2, Track } from "../geo/types";
+import { shortUrl } from "../share";
+import { qrPath } from "./qr";
 import type { Palette, RenderContext } from "./types";
 
 /*
@@ -391,4 +393,75 @@ export function pseudoCoordinates(name: string, seed: number): string {
 export function fitTrack(track: Track, box: Box, padding: number): { fit: Fit; sw: number } {
   const fit = fitToBox(track.loop, box, padding);
   return { fit, sw: trackStroke(fit) };
+}
+
+export const MADE_WITH = "MADE WITH TRACK FORGE";
+
+export interface AttributionOptions {
+  /** Anchor: the row's left edge (start), right edge (end) or centre (middle). */
+  x: number;
+  /** Top of the row (the QR's top edge). */
+  y: number;
+  align?: "start" | "middle" | "end";
+  /** Ink for the two text lines. */
+  color: string;
+  /** Ink for the QR modules; defaults to `color`. */
+  qrColor?: string;
+  opacity?: number;
+  qrOpacity?: number;
+  /** QR side including its quiet zone; about 5% of the sheet width reads well in print. */
+  side?: number;
+  urlSize?: number;
+  capsSize?: number;
+  font?: string;
+  /** Dark modules drawn smaller than their cell (0.84 reads as engraved dots and still scans). */
+  inset?: number;
+  /** A plate under the whole row, for busy backgrounds (maps). */
+  plate?: { fill: string; opacity?: number; stroke?: string; pad?: number; radius?: number };
+}
+
+export interface Attribution {
+  markup: string;
+  width: number;
+  height: number;
+  /** Left edge actually used, after alignment. */
+  left: number;
+}
+
+/**
+ * The attribution row every style carries when it knows its own link: a QR code and, beside it,
+ * "MADE WITH TRACK FORGE" in tracked caps over the short link. Omitted entirely when the context
+ * has no `shareUrl`, so offline builds and tests are unchanged.
+ */
+export function attributionRow(ctx: Pick<RenderContext, "shareUrl" | "W" | "body">, o: AttributionOptions): Attribution {
+  if (!ctx.shareUrl) return { markup: "", width: 0, height: 0, left: o.x };
+  const side = o.side ?? Math.round(ctx.W * 0.05);
+  const urlSize = o.urlSize ?? 13;
+  const capsSize = o.capsSize ?? 9.5;
+  const capsTracking = 2.6;
+  const short = shortUrl(ctx.shareUrl);
+  const gap = Math.round(side * 0.16);
+  const textW = Math.max(short.length * urlSize * 0.54, MADE_WITH.length * (capsSize * 0.66 + capsTracking));
+  const width = side + gap + textW;
+  const align = o.align ?? "start";
+  const left = align === "start" ? o.x : align === "end" ? o.x - width : o.x - width / 2;
+  const qr = qrPath(ctx.shareUrl, side, left, o.y, { inset: o.inset });
+  const tx = left + side + gap;
+  const cy = o.y + side / 2;
+  const font = o.font ?? ctx.body;
+  const plate = o.plate
+    ? (() => {
+        const pad = o.plate.pad ?? Math.round(side * 0.18);
+        const r = o.plate.radius ?? 4;
+        return `<rect x="${f1(left - pad)}" y="${f1(o.y - pad)}" width="${f1(width + 2 * pad)}" height="${f1(side + 2 * pad)}" rx="${r}" fill="${o.plate.fill}" fill-opacity="${o.plate.opacity ?? 1}"${o.plate.stroke ? ` stroke="${o.plate.stroke}" stroke-opacity="0.5" stroke-width="1"` : ""}/>`;
+      })()
+    : "";
+  const markup =
+    `<g class="attribution" opacity="${o.opacity ?? 1}" font-family="${esc(font)}">` +
+    plate +
+    `<path d="${qr.d}" fill="${o.qrColor ?? o.color}" fill-opacity="${o.qrOpacity ?? 1}" shape-rendering="crispEdges"/>` +
+    text(tx, cy - urlSize * 0.35, MADE_WITH, { fill: o.color, "font-size": capsSize, "font-weight": 700, "letter-spacing": capsTracking }) +
+    text(tx, cy + urlSize * 0.95, short, { fill: o.color, "font-size": urlSize, "font-weight": 500 }) +
+    `</g>`;
+  return { markup, width, height: side, left };
 }

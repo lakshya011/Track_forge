@@ -1,7 +1,7 @@
 import { pathD } from "../../geo/svg";
 import { buildCartography } from "../cartography";
 import { mapDefs, mapLayer, type MapTheme } from "../mapLayer";
-import { cornerNamesAlongPath, creditText, esc, f1, fitTitleSize, fitTrack, startFinishTick, text } from "../primitives";
+import { attributionRow, cornerNamesAlongPath, creditText, esc, f1, fitTitleSize, fitTrack, startFinishTick, text } from "../primitives";
 import type { Palette, RenderContext, StyleDefinition, Wood } from "../types";
 
 interface WoodTheme {
@@ -91,6 +91,19 @@ function render(ctx: RenderContext): string {
   const full = pathD(track.loop, fit);
   const subtitle = `GRAND PRIX CIRCUIT  ·  ${(track.length / 1000).toFixed(3)} KM  ·  ${track.corners.length} CORNERS  ·  GHOST LAP ${ctx.h.lapTime.formatted}`;
   const titleY = map.y + map.height + Math.round(band * 0.5) + titleSize * 0.3;
+  // A cartouche in the map's bottom-right corner, like a surveyor's mark: a plate in the board's own
+  // tone with a hairline, the code stamped in the ink, the link beside it.
+  const side = Math.round(W * 0.05);
+  const cartouche = attributionRow(ctx, {
+    x: map.x + map.width - 18,
+    y: map.y + map.height - 18 - side,
+    align: "end",
+    color: wood.inkSoft,
+    qrColor: wood.ink,
+    qrOpacity: 0.85,
+    side,
+    plate: { fill: wood.base, opacity: 0.96, stroke: wood.ink, pad: 10, radius: 2 },
+  });
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" font-family="${esc(ctx.body)}">
 <style>${ctx.fontFace}</style>
@@ -115,6 +128,7 @@ ${mapLayer(carto, fit, theme)}
 <path d="${full}" fill="none" stroke="${wood.highlight}" stroke-opacity="0.35" stroke-width="${f1(sw * 0.22)}" stroke-linecap="round" stroke-linejoin="round" transform="translate(${f1(-sw * 0.16)} ${f1(-sw * 0.22)})"/>
 ${startFinishTick(track, fit, sw * 1.1, wood.ink, wood.base)}
 ${names.body}
+${cartouche.markup}
 ${text(W / 2, titleY, track.name, { fill: wood.ink, "font-size": f1(titleSize), "font-weight": 800, "letter-spacing": f1(titleSize * 0.04), "text-anchor": "middle", "font-family": ctx.display })}
 ${text(W / 2, titleY + 46, subtitle, { fill: wood.inkSoft, "font-size": 17, "letter-spacing": 4, "text-anchor": "middle", "font-weight": 600 })}
 ${text(W / 2, H - inset * 0.5 - 16, creditText(ctx.lengthReference, "Surroundings are fictional and generated"), { fill: wood.inkSoft, "font-size": 11, "text-anchor": "middle", "fill-opacity": 0.85 })}
@@ -127,4 +141,8 @@ export const engraved: StyleDefinition = {
   hint: "Wood board, raised line, corner names",
   palette,
   render,
+  story: (ctx) => {
+    const wood = WOODS[ctx.options.wood] ?? WOODS.oak;
+    return { paper: wood.base, ink: wood.ink, muted: wood.inkSoft };
+  },
 };
